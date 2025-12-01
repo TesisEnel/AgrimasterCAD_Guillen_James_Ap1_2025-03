@@ -1,6 +1,7 @@
 using AgrimasterCAD.Components;
 using AgrimasterCAD.Components.Account;
 using AgrimasterCAD.Data;
+using AgrimasterCAD.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -23,18 +24,26 @@ builder.Services.AddAuthentication(options =>
     .AddIdentityCookies();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
     {
-        options.SignIn.RequireConfirmedAccount = true;
+        options.User.RequireUniqueEmail = true;
         options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
     })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
+
+
+    builder.Services.AddScoped<SolicitudesService>();
+    builder.Services.AddScoped<PagosService>();
+    builder.Services.AddScoped<ComprobantesPagoService>();
+    builder.Services.AddScoped<NotificacionesService>();
+    builder.Services.AddScoped<MetodosPagoService>();
 
 var app = builder.Build();
 

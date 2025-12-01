@@ -1,0 +1,157 @@
+@page "/admin/crear-agrimensor"
+@attribute [Authorize(Roles = "Administrador")]
+@rendermode InteractiveServer
+
+@inject UserManager<ApplicationUser> UserManager
+@inject NavigationManager Navigation
+@inject RoleManager<IdentityRole> RoleManager
+
+<PageTitle>Crear Agrimensor</PageTitle>
+
+<EditForm Model="modelo" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="container mt-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h4 class="card-title"><strong>Crear Agrimensor</strong></h4>
+            </div>
+
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label"><strong>Nombre Completo</strong></label>
+                    <InputText class="form-control" @bind-Value="modelo.NombreCompleto" />
+                    <ValidationMessage For="(() => modelo.NombreCompleto)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Cédula</strong></label>
+                    <InputText class="form-control" @bind-Value="modelo.NumeroCedula" />
+                    <ValidationMessage For="(() => modelo.NumeroCedula)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Ciudad</strong></label>
+                    <InputText class="form-control" @bind-Value="modelo.Ciudad" />
+                    <ValidationMessage For="(() => modelo.Ciudad)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Dirección</strong></label>
+                    <InputText class="form-control" @bind-Value="modelo.Direccion" />
+                    <ValidationMessage For="(() => modelo.Direccion)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Número CODIA</strong></label>
+                    <InputText class="form-control" @bind-Value="modelo.NumeroCodia" />
+                    <ValidationMessage For="(() => modelo.NumeroCodia)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Correo</strong></label>
+                    <InputText class="form-control" @bind-Value="modelo.Email" />
+                    <ValidationMessage For="(() => modelo.Email)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Teléfono</strong></label>
+                    <InputText class="form-control" @bind-Value="modelo.PhoneNumber" />
+                    <ValidationMessage For="(() => modelo.PhoneNumber)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Contraseña</strong></label>
+                    <InputText type="password" class="form-control" @bind-Value="password" />
+                    <ValidationMessage For="(() => password)" />
+                </div>
+
+                @if (!string.IsNullOrEmpty(errorMensaje))
+                {
+                    <div class="alert alert-danger">
+                        @errorMensaje
+                    </div>
+                }
+            </div>
+
+            <div class="card-footer text-center">
+                <a href="/admin/listado-agrimensores" class="btn btn-secondary me-2">
+                    <span class="bi bi-arrow-left me-2"></span> Volver
+                </a>
+
+                <button class="btn btn-success"
+                        type="submit"
+                        disabled="@(isLoading || CamposIncompletos())">
+                    @if (isLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                        <span>Guardando...</span>
+                    }
+                    else
+                    {
+                        <span class="bi bi-save me-2"></span>
+                        <span>Guardar</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private ApplicationUser modelo = new();
+    private string password = string.Empty;
+    private string errorMensaje = string.Empty;
+    private bool isLoading = false;
+
+    private bool CamposIncompletos() =>
+        string.IsNullOrWhiteSpace(modelo.NombreCompleto) ||
+        string.IsNullOrWhiteSpace(modelo.NumeroCedula) ||
+        string.IsNullOrWhiteSpace(modelo.Ciudad) ||
+        string.IsNullOrWhiteSpace(modelo.Direccion) ||
+        string.IsNullOrWhiteSpace(modelo.Email) ||
+        string.IsNullOrWhiteSpace(modelo.PhoneNumber) ||
+        string.IsNullOrWhiteSpace(password);
+
+    private async Task Guardar()
+    {
+        isLoading = true;
+        errorMensaje = string.Empty;
+
+        try
+        {
+            var usuario = new ApplicationUser
+            {
+                UserName = modelo.Email,
+                PhoneNumber = modelo.PhoneNumber,
+                Email = modelo.Email,
+                NombreCompleto = modelo.NombreCompleto,
+                NumeroCedula = modelo.NumeroCedula,
+                Ciudad = modelo.Ciudad,
+                Direccion = modelo.Direccion,
+                NumeroCodia = modelo.NumeroCodia,
+            };
+
+            var result = await UserManager.CreateAsync(usuario, password);
+
+            if (!result.Succeeded)
+            {
+                errorMensaje = string.Join(" | ", result.Errors.Select(e => e.Description));
+                isLoading = false;
+                return;
+            }
+
+            await UserManager.AddToRoleAsync(usuario, "Agrimensor");
+
+            Navigation.NavigateTo("/admin/agrimensores");
+        }
+        catch (Exception ex)
+        {
+            errorMensaje = "Error inesperado: " + ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

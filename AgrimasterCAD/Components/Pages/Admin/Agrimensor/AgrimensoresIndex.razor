@@ -1,0 +1,155 @@
+@page "/admin/agrimensores"
+@attribute [Authorize(Roles = "Administrador")]
+@rendermode InteractiveServer
+
+@inject UserManager<ApplicationUser> UserManager
+@inject NavigationManager Navigation
+
+<PageTitle>Listado de Agrimensores</PageTitle>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header text-center">
+            <h5 class="card-title fw-bold">Listado de Agrimensores</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-md-end mb-3">
+                <a href="/admin/crear-agrimensor" class="btn btn-primary">
+                    <i class="bi bi-person-plus"></i> Crear Agrimensor
+                </a>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Buscar (Nombre, Cédula, Email, CODIA)</label>
+                    <InputText class="form-control"
+                               placeholder="Escribe para buscar..."
+                               @bind-Value="textoBusqueda" />
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle shadow-sm">
+                    <thead class="table-light">
+                        <tr class="text-center">
+                            <th>Nombre</th>
+                            <th>Cédula</th>
+                            <th>Ciudad</th>
+                            <th>Correo</th>
+                            <th>CODIA</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (!AgrimensoresFiltrados.Any())
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center">No hay agrimensores registrados.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var ag in AgrimensoresFiltrados)
+                            {
+                                <tr>
+                                    <td>@ag.NombreCompleto</td>
+                                    <td>@ag.NumeroCedula</td>
+                                    <td>@ag.Ciudad</td>
+                                    <td>@ag.Email</td>
+                                    <td>@(ag.NumeroCodia ?? "N/A")</td>
+
+                                    <td class="text-center">
+                                        <a class="btn btn-primary btn-sm me-1"
+                                           href="/admin/editar-agrimensor/@ag.Id">
+                                            Editar
+                                        </a>
+
+                                        <button class="btn btn-danger btn-sm"
+                                                @onclick="() => PrepararEliminacion(ag)">
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer text-muted">
+            <small>Total de agrimensores: @AgrimensoresFiltrados.Count()</small>
+        </div>
+
+    </div>
+</div>
+
+@if (agrimensorAEliminar != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close" @onclick="CancelarEliminacion"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p>¿Seguro que deseas eliminar al agrimensor <strong>@agrimensorAEliminar.NombreCompleto</strong>?</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CancelarEliminacion">Cancelar</button>
+                    <button class="btn btn-danger" @onclick="Eliminar">Eliminar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<ApplicationUser> agrimensores = new();
+    private string textoBusqueda = "";
+    private ApplicationUser? agrimensorAEliminar;
+
+    private IEnumerable<ApplicationUser> AgrimensoresFiltrados =>
+        agrimensores.Where(a =>
+            string.IsNullOrWhiteSpace(textoBusqueda) ||
+            (a.NombreCompleto?.Contains(textoBusqueda, StringComparison.OrdinalIgnoreCase) ?? false) ||
+            (a.NumeroCedula?.Contains(textoBusqueda) ?? false) ||
+            (a.Email?.Contains(textoBusqueda, StringComparison.OrdinalIgnoreCase) ?? false) ||
+            (a.NumeroCodia?.Contains(textoBusqueda, StringComparison.OrdinalIgnoreCase) ?? false)
+        );
+
+    protected override async Task OnInitializedAsync()
+    {
+        var users = await UserManager.GetUsersInRoleAsync("Agrimensor");
+        agrimensores = users.ToList();
+    }
+
+    private void PrepararEliminacion(ApplicationUser ag)
+    {
+        agrimensorAEliminar = ag;
+    }
+
+    private void CancelarEliminacion()
+    {
+        agrimensorAEliminar = null;
+    }
+
+    private async Task Eliminar()
+    {
+        if (agrimensorAEliminar != null)
+        {
+            await UserManager.DeleteAsync(agrimensorAEliminar);
+
+            agrimensores.Remove(agrimensorAEliminar);
+            agrimensorAEliminar = null;
+        }
+    }
+}
