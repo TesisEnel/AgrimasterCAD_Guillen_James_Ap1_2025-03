@@ -1,7 +1,306 @@
 ﻿@page "/"
+@layout EmptyLayout
 
-<PageTitle>Home</PageTitle>
+<PageTitle>AgrimasterCAD</PageTitle>
 
-<h1>Hello, world!</h1>
+<header id="header" class="header sticky-top">
 
-Welcome to your new app.
+    <div class="branding d-flex align-items-cente">
+
+        <div class="container position-relative d-flex align-items-center justify-content-between">
+            <a href="index.html" class="logo d-flex align-items-center">
+                <img src="favicon.png" alt="">
+                <h1 class="sitename">AgrimasterCAD</h1>
+            </a>
+
+            <nav id="navmenu" class="navmenu">
+                <ul>
+                    <li><a href="#hero" class="active">Inicio</a></li>
+                    <li><a href="#about">Quiénes Somos</a></li>
+                    <li><a href="#services">Servicios</a></li>
+                    <AuthorizeView Context="auth">
+                        <Authorized>
+                            <li>
+                                <a href="@GetDashboardUrl(auth.User)">Panel</a>
+                            </li>
+                        </Authorized>
+
+                        <NotAuthorized>
+                            <li><a href="/Account/Login">Iniciar Sesión</a></li>
+                            <li><a href="/Account/Register">Registrarse</a></li>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </ul>
+                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+            </nav>
+
+        </div>
+
+    </div>
+
+</header>
+
+<main class="main">
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero section">
+
+        <div class="hero-content">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="content">
+                            <h1>Planos y Levantamientos Topográficos Profesionales</h1>
+                            <p>Somos expertos en la elaboración de planos, mensuras, deslindes y levantamientos para
+                                propiedades en toda la República Dominicana. Precisión, rapidez y tecnología de punta al
+                                alcance de tu proyecto.</p>
+                            <div class="cta-group">
+                                <a href="#about" class="btn-primary">Conoce Más</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="hero-image">
+                            <img src="assets/img/about/topografia.webp" alt="Topografía" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-features">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                            <div class="feature-item">
+                                <div class="icon">
+                                    <i class="bi bi-geo-alt"></i>
+                                </div>
+                                <h4>Precisión Total</h4>
+                                <p>Equipos modernos para resultados confiables y certificados.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                            <div class="feature-item">
+                                <div class="icon">
+                                    <i class="bi bi-file-earmark-text"></i>
+                                </div>
+                                <h4>Planos Certificados</h4>
+                                <p>Documentación lista para uso legal, compra/venta o títulos.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                            <div class="feature-item">
+                                <div class="icon">
+                                    <i class="bi bi-clock-history"></i>
+                                </div>
+                                <h4>Entrega Rápida</h4>
+                                <p>Procesos optimizados para minimizar tiempos de espera.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                            <div class="feature-item">
+                                <div class="icon"><i class="bi bi-award"></i></div>
+                                <h4>Profesionales CODIA</h4>
+                                <p>Agrimensores certificados y con amplia experiencia.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section><!-- /Hero Section -->
+
+    <!-- About Section -->
+    <section id="about" class="about section">
+
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Quiénes Somos</h2>
+            <p>Especialistas en Topografía y Agrimensura</p>
+        </div><!-- End Section Title -->
+
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+            <div class="row">
+                <div class="col-lg-6" data-aos="fade-right" data-aos-delay="200">
+                    <div class="content">
+                        <h2>Soluciones Topográficas para tu Propiedad</h2>
+                        <p class="lead">En AgrimasterCAD combinamos tecnología avanzada, experiencia profesional y un
+                            enfoque centrado en el cliente para entregar resultados precisos y confiables.</p>
+
+                        <div class="description">
+                            <p>Realizamos planos, levantamientos, mensuras, georreferenciación, actualizaciones y todo
+                                lo necesario para trámites legales, ventas, construcción y certificaciones.</p>
+
+                            <p>Trabajamos a nivel nacional garantizando calidad, rapidez y un servicio personalizado
+                                adaptado a cada tipo de proyecto.</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
+                    <div class="image-container">
+                        <img src="assets/img/about/agrimensura.jpg" alt="About Us" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section><!-- /About Section -->
+
+    <!-- Services Section -->
+    <section id="services" class="services section">
+
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Servicios</h2>
+            <p>¿Qué hacemos?</p>
+        </div><!-- End Section Title -->
+
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+            <div class="row gy-5">
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="service-item">
+                        <div class="service-icon">
+                            <i class="bi bi-map"></i>
+                        </div>
+                        <h3>Levantamientos Topográficos</h3>
+                        <p>Medición precisa del terreno con equipos GNSS y Estación Total.</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="250">
+                    <div class="service-item">
+                        <div class="service-icon">
+                            <i class="bi bi-pencil-square"></i>
+                        </div>
+                        <h3>Planos para Títulos</h3>
+                        <p>Planos certificados para procesos legales y Registro de Títulos.</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="service-item">
+                        <div class="service-icon">
+                            <i class="bi bi-signpost-split"></i>
+                        </div>
+                        <h3>Deslindes y Subdivisiones</h3>
+                        <p>Separación o delimitación oficial de terrenos para nuevas parcelas.</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="service-item">
+                        <div class="service-icon">
+                            <i class="bi bi-rulers"></i>
+                        </div>
+                        <h3>Georreferenciación</h3>
+                        <p>Asignación precisa de coordenadas UTM al terreno.</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="250">
+                    <div class="service-item">
+                        <div class="service-icon">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <h3>Levantamientos para Construcción</h3>
+                        <p>Planos detallados para obras, replanteos y cálculos estructurales.</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="service-item">
+                        <div class="service-icon">
+                            <i class="bi bi-clipboard-check"></i>
+                        </div>
+                        <h3>Consultoría</h3>
+                        <p>Asesoría técnica sobre cualquier proceso de mensura en RD.</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section><!-- /Services Section -->
+
+</main>
+
+<footer id="footer" class="footer light-background">
+
+    <div class="container footer-top">
+        <div class="row gy-4">
+            <div class="col-lg-4 col-md-6 footer-about">
+                <a href="index.html" class="d-flex align-items-center">
+                    <span class="sitename">AgrimasterCAD</span>
+                </a>
+                <div class="footer-contact pt-3">
+                    <p>Calle Narciso González #3, Urbanización Los Maestros</p>
+                    <p>San Francisco de Macorís, Rep. Dom.</p>
+                    <p class="mt-3"><strong>Teléfono:</strong> <span>+1 (849) 452-7080</span></p>
+                    <p><strong>Email:</strong> <span>agrimastercad@gmail.com</span></p>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-3 footer-links">
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><i class="bi bi-chevron-right"></i> <a href="#hero">Inicio</a></li>
+                    <li><i class="bi bi-chevron-right"></i> <a href="#about">Quiénes Somos</a></li>
+                    <li><i class="bi bi-chevron-right"></i> <a href="#services">Servicios</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-2 col-md-3 footer-links">
+                <h4>Servicios</h4>
+                <ul>
+                    <li><i class="bi bi-chevron-right"></i> Levantamientos</li>
+                    <li><i class="bi bi-chevron-right"></i> Mensuras</li>
+                    <li><i class="bi bi-chevron-right"></i> Deslindes</li>
+                    <li><i class="bi bi-chevron-right"></i> Planos</li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+        <p>© <span>2025</span> <strong class="px-1 sitename">AgrimasterCAD</strong>. Todos los derechos reservados.</p>
+    </div>
+
+</footer>
+
+<!-- Scroll Top -->
+<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+        class="bi bi-arrow-up-short"></i></a>
+
+<!-- Preloader -->
+<div id="preloader">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+</div>
+
+@code {
+    private string GetDashboardUrl(ClaimsPrincipal user)
+    {
+        if (user.IsInRole("Administrador"))
+            return "/admin/dashboard";
+
+        if (user.IsInRole("Agrimensor"))
+            return "/agrimensor/dashboard";
+
+        if (user.IsInRole("Cliente"))
+            return "/cliente/dashboard";
+
+        return "/";
+    }
+}
