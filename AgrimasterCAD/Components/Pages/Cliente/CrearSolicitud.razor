@@ -1,0 +1,145 @@
+@page "/cliente/crear-solicitud"
+@attribute [Authorize(Roles = "Cliente")]
+@rendermode InteractiveServer
+
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject SolicitudesService solicitudesService
+@inject NavigationManager navigationManager
+
+<PageTitle>Crear Solicitud</PageTitle>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header text-center">
+            <h5 class="card-title fw-bold">Crear Solicitud</h5>
+        </div>
+
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Cédula (Frontal y Posterior)</label>
+                <InputFile class="form-control" OnChange="OnCedulaChange" accept="application/pdf" />
+                <small class="text-muted">
+                    Debe subir un único PDF que contenga ambos lados de la cédula. (Máx. 5 MB)
+                </small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Constancia Anotada</label>
+                <InputFile class="form-control" OnChange="OnConstanciaChange" accept="application/pdf" />
+                <small class="text-muted">
+                    Formato permitido: PDF (Máx. 5 MB)
+                </small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Provincia</label>
+                <InputText class="form-control" placeholder="Ej: Duarte" @bind-Value="solicitud.Provincia"></InputText>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Municipio</label>
+                <InputText class="form-control" placeholder="Ej: San Francisco de Macorís"
+                    @bind-Value="solicitud.Municipio"></InputText>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Dirección del Terreno</label>
+                <InputText class="form-control" placeholder="Ej: Urbanización Los Maestros #8"
+                    @bind-Value="solicitud.Direccion"></InputText>
+            </div>
+
+            @if (!string.IsNullOrEmpty(errorMensaje))
+            {
+                <div class="alert alert-danger" role="alert">@errorMensaje</div>
+            }
+        </div>
+
+        <div class="card-footer text-center">
+            <a href="/cliente/solicitudes" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+
+            <button type="button" class="btn btn-success" @onclick="Guardar">
+                <i class="bi bi-floppy"></i> Guardar
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Solicitudes solicitud { get; set; } = new Solicitudes();
+    private IBrowserFile? archivoCedula;
+    private IBrowserFile? archivoConstancia;
+
+    private string? userId;
+    private string? errorMensaje;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userId == null)
+        {
+            navigationManager.NavigateTo("/Account/Login");
+            return;
+        }
+
+        solicitud.ClienteId = userId;
+    }
+
+    private void OnCedulaChange(InputFileChangeEventArgs e)
+    {
+        archivoCedula = e.File;
+    }
+
+    private void OnConstanciaChange(InputFileChangeEventArgs e)
+    {
+        archivoConstancia = e.File;
+    }
+
+    private async Task Guardar()
+    {
+        errorMensaje = null;
+
+        if (archivoCedula == null || archivoConstancia == null)
+        {
+            errorMensaje = "Debe subir ambos documentos.";
+            return;
+        }
+
+        try
+        {
+            var rutaCedula = await solicitudesService.GuardarArchivo(archivoCedula, "cedulas");
+            var rutaConstancia = await solicitudesService.GuardarArchivo(archivoConstancia, "constancias");
+
+            solicitud.Documentos.Add(new SolicitudDocumentos
+            {
+                Tipo = "Cedula",
+                RutaArchivo = rutaCedula
+            });
+
+            solicitud.Documentos.Add(new SolicitudDocumentos
+            {
+                Tipo = "Constancia Anotada",
+                RutaArchivo = rutaConstancia
+            });
+        }
+        catch (Exception ex)
+        {
+            errorMensaje = ex.Message;
+            return;
+        }
+
+        if (await solicitudesService.Guardar(solicitud))
+        {
+            navigationManager.NavigateTo("/cliente/solicitudes");
+        }
+        else
+        {
+            errorMensaje = "Ocurrió un error guardando la solicitud.";
+        }
+    }
+}
