@@ -22,6 +22,7 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.x' # Specify the desired .NET 10 version
+          
       - name: Cache SonarQube Cloud packages
         uses: actions/cache@v4
         with:
@@ -46,6 +47,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"TesisEnel_AdonisMercado_Ap1_2025-03" /o:"tesisenel" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"TesisEnel_AgrimasterCAD_Guillen_James_Ap1_2025-03" /o:"tesisenel" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
           dotnet build
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
